@@ -13,7 +13,8 @@ class App extends Component {
   };
 
   componentDidMount() {
-    const contacts = JSON.parse(localStorage.getItem('phonebook'));
+    const data = localStorage.getItem('phonebook');
+    const contacts = JSON.parse(data);
     // contacts && contacts.length
     if (contacts?.length) {
       this.setState({
@@ -27,26 +28,27 @@ class App extends Component {
     localStorage.setItem('phonebook', JSON.stringify(contacts));
   }
 
-  addContact = ({ name, number }) => {
-    if (
-      this.state.contacts.find(
-        item => item.name.toLowerCase() === name.toLowerCase()
-      )
-    ) {
-      alert(`${name} is already in contacts!`);
-    } else {
-      //принимаем props с дочернего компонента
-      this.setState(({ contacts }) => {
-        const newContact = {
-          name,
-          number,
-          id: nanoid(),
-        };
-        return {
-          contacts: [...contacts, newContact],
-        };
-      });
+  addContact = data => {
+    const { contacts } = this.state;
+    const dublicate = contacts.find(
+      contact => contact.name.toLowerCase() === data.name.toLowerCase()
+    );
+    if (dublicate) {
+      alert(`${data.name} is already in contacts!`);
+      return;
     }
+    this.setState(prevState => {
+      const { contacts } = prevState;
+      const { name, number } = data;
+      const newContact = {
+        name,
+        number,
+        id: nanoid(),
+      };
+      return {
+        contacts: [...contacts, newContact],
+      };
+    });
   };
 
   removeContact = id => {
